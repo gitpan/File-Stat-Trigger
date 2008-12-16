@@ -1,5 +1,5 @@
 ---
-abstract: ~
+abstract: 'The module to monitor the status of file.'
 author:
   - 'Akihito Takeda <takeda.akihito@gmail.com>'
 build_requires:
@@ -25,4 +25,4 @@ requires:
   Moose::Util::TypeConstraints: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02
