@@ -21,8 +21,9 @@ requires:
   DateTime::Format::DateParse: 0
   DateTime::TimeZone: 0
   File::Stat::OO: 0
+  Module::Install::AuthorTests: 0
   Moose: 0
   Moose::Util::TypeConstraints: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.04
+version: 0.05

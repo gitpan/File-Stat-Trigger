@@ -8,7 +8,7 @@ use Class::Trigger;
 use DateTime;
 use DateTime::Format::DateParse;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 subtype 'FileStat'
     => as 'Object'
@@ -29,7 +29,7 @@ coerce 'DateTime'
 has 'file_stat' => (is => 'rw', isa => 'FileStat', coerce  => 1);
 
 has [ qw<check_atime check_mtime check_ctime> ] =>
-    ( is  => 'rw', isa => 'ArrayRef', coerce  => 1, default => sub { ['!='] } );
+    ( is  => 'rw', isa => 'ArrayRef', default => sub { ['!='] } );
 
 has [ qw<_atime _mtime _ctime> ] =>
     ( is  => 'rw', isa => 'DateTime', coerce  => 1);
@@ -119,22 +119,35 @@ sub scan {
 }
 
 sub size_trigger {
-    my ($self, $code) = @_;
+    my ($self, $code, $check_size) = @_;
+    $self->check_size($check_size) if $check_size;
     $self->_trigger('size_trigger', $code);
 }
 
 sub atime_trigger {
-    my ($self, $code) = @_;
+    my ($self, $code, $_check_atime) = @_;
+    if ( $_check_atime ) {
+        $self->check_atime($_check_atime); 
+        $self->_atime($_check_atime->[1]); 
+    }
     $self->_trigger('atime_trigger', $code);
 }
 
 sub mtime_trigger {
-    my ($self, $code) = @_;
+    my ($self, $code, $_check_mtime) = @_;
+    if ( $_check_mtime ) {
+        $self->check_mtime($_check_mtime); 
+        $self->_mtime($_check_mtime->[1]); 
+    }
     $self->_trigger('mtime_trigger', $code);
 }
 
 sub ctime_trigger {
-    my ($self, $code) = @_;
+    my ($self, $code, $_check_ctime) = @_;
+    if ( $_check_ctime ) {
+        $self->check_atime($_check_ctime); 
+        $self->_ctime($_check_ctime->[1]); 
+    }
     $self->_trigger('ctime_trigger', $code);
 }
 
@@ -185,7 +198,9 @@ File::Stat::Trigger - The module to monitor the status of file.
   
   $fs->atime_trigger(\&sample);
   $fs->ctime_trigger(\&sample);
+  # $fs->ctime_trigger(\&sample,['!=', '2008/12/1 12:00:00']);
   $fs->mtime_trigger(\&sample);
+  # $fs->mtime_trigger(\&sample,['!=', '2008/12/1 12:00:00']);
   
   my $result = $fs->scan();
   
@@ -212,19 +227,19 @@ Set file name, file parameter.
 
 =item size_trigger
 
-Register size trigger.
+Register size trigger. Set file parameter.
 
 =item atime_trigger
 
-Register atime trigger.
+Register atime trigger. Set file parameter.
 
 =item ctime_trigger
 
-Register ctime trigger.
+Register ctime trigger. Set file parameter.
 
 =item mtime_trigger
 
-Register mtime trigger.
+Register mtime trigger. Set file parameter.
 
 =item scan
 
